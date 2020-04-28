@@ -1,0 +1,14 @@
+{
+  "name": "kaleido-contract-templates",
+  "version": "1.0.0",
+  "description": "Template contracts offered by Kaleido Smart Contract Management",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Kaleido",
+  "license": "ISC",
+  "dependencies": {},
+  "devDependencies": {
+    "@openzeppelin/contracts": "^3.0.1"
+  }
+}
