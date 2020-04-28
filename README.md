@@ -1,0 +1,1 @@
+# kaleido-contract-templates
