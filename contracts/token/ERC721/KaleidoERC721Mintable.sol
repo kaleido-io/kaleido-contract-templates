@@ -1,0 +1,18 @@
+pragma solidity ^0.6.0;
+
+import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import "@openzeppelin/contracts/access/AccessControl.sol";
+
+contract KaleidoERC721Mintable is ERC721, AccessControl {
+    bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
+
+    constructor(string memory name, string memory symbol) ERC721(name, symbol) public {
+        _setupRole(DEFAULT_ADMIN_ROLE, _msgSender());
+        _setupRole(MINTER_ROLE, _msgSender());
+    }
+
+    function mint(address to, uint256 amount) public {
+        require(hasRole(MINTER_ROLE, _msgSender()), "KaleidoERC721Mintable: must have minter role to mint");
+        _mint(to, amount);
+    }
+}

@@ -7,8 +7,9 @@
   },
   "author": "Kaleido",
   "license": "ISC",
-  "dependencies": {},
   "devDependencies": {
+    "@openzeppelin/cli": "^2.8.2",
     "@openzeppelin/contracts": "^3.0.1"
-  }
+  },
+  "dependencies": {}
 }
