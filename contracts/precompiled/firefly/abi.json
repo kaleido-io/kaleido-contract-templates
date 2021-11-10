@@ -1,0 +1,84 @@
+[
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "author",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "timestamp",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "string",
+        "name": "namespace",
+        "type": "string"
+      },
+      {
+        "indexed": false,
+        "internalType": "bytes32",
+        "name": "uuids",
+        "type": "bytes32"
+      },
+      {
+        "indexed": false,
+        "internalType": "bytes32",
+        "name": "batchHash",
+        "type": "bytes32"
+      },
+      {
+        "indexed": false,
+        "internalType": "string",
+        "name": "payloadRef",
+        "type": "string"
+      },
+      {
+        "indexed": false,
+        "internalType": "bytes32[]",
+        "name": "contexts",
+        "type": "bytes32[]"
+      }
+    ],
+    "name": "BatchPin",
+    "type": "event"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "string",
+        "name": "namespace",
+        "type": "string"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "uuids",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "batchHash",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "string",
+        "name": "payloadRef",
+        "type": "string"
+      },
+      {
+        "internalType": "bytes32[]",
+        "name": "contexts",
+        "type": "bytes32[]"
+      }
+    ],
+    "name": "pinBatch",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  }
+]
