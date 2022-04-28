@@ -1,0 +1,1 @@
+`abi.json` and `bytecode.txt` and `devdocs.json` precompiled from https://github.com/hyperledger/firefly-tokens-erc1155/blob/f058ac4ac3700bbf84978cc3f5994bac827d1034/solidity/contracts/ERC1155MixedFungible.sol using SOLC version: `v0.6.12+commit.27d51765` and EVM version: `constantinople`
