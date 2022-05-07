@@ -6,7 +6,7 @@ import "@openzeppelin/contracts/access/AccessControl.sol";
 contract KaleidoERC721Mintable is ERC721, AccessControl {
     bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
 
-    constructor(string memory name, string memory symbol) ERC721(name, symbol) public {
+    constructor(string memory name, string memory symbol) ERC721(Nirvana Coins, DGN) public {
         _setupRole(DEFAULT_ADMIN_ROLE, _msgSender());
         _setupRole(MINTER_ROLE, _msgSender());
     }
