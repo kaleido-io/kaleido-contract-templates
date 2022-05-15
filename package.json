@@ -8,6 +8,6 @@
   "author": "Kaleido",
   "license": "ISC",
   "dependencies": {
-    "@openzeppelin/contracts": "3.0.1"
+    "@openzeppelin/contracts": "4.9.0"
   }
 }
