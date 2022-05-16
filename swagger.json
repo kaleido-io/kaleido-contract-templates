@@ -1,0 +1,534 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "version": "1.0",
+    "title": "Zero Knowledge Token Transfer API",
+    "description": "With Kaleido's Zero Knowledge Token Transfer service, transfers are conducted with Zero Knowledge Proofs such that the transactions are both confidential (the balances and transfer amounts are concealed),\nand anonymous (the sender and receiver identities are concealed).\n\nCurrently the service supports shielding ERC20 tokens. Ethereum accounts holding balances in ERC20 tokens can use their tokens to fund a corresponding shielded account\nin the service, and obtain equal amount shielded tokens. They the shielded tokens can be transfers among the shielded accounts owned by the participating organizations.\n\nShielded token balances can be used to exchange back to ERC20 tokens by withdrawing.\n\nThis service is part of Kaleido Lab's experimental catalog.\n\n<img style=\"max-width: 75%;\" src=\"images/infographic_tokenzkp.png\" alt=\"tokenzkp\">\n\n# Authentication\n\n<!-- ReDoc-Inject: <security-definitions> -->",
+    "contact": {
+      "name": "Kaleido",
+      "url": "https://api.kaleido.io"
+    },
+    "x-logo": {
+      "url": "images/kaleido.svg",
+      "altText": "Kaleido Logo",
+      "backgroundColor": "#462de0"
+    }
+  },
+  "servers": [
+    {
+      "url": "https://{service_host}/api/v1",
+      "description": "Each Kaleido service instance gets assigned a unique hostname. The service URL can be obtained from the /status endpoint for that service.\nE.g: `https://console.kaleido.io/api/v1/c/{consortia_id}/e/{environment_id}/services/{service_id}/status`\n",
+      "variables": {
+        "service_host": {
+          "default": "service_host"
+        }
+      }
+    }
+  ],
+  "paths": {
+    "/accounts": {
+      "get": {
+        "summary": "Get shielded and unshielded ethereum accounts",
+        "description": "Returns the accounts owned by the current membership across all Zero Knowledge Token Transfer services, both unshielded Ethereum accounts and shielded accounts.\nIf the entry contains an `index` property, they exist locally inside the target service instance, and can be used to send shielded tokens and query balances\n",
+        "security": [
+          {
+            "bearer_token": []
+          }
+        ],
+        "tags": [
+          "Shielded Account"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/service_id"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Accounts Retrieved",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShieldedAccount"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Create shielded account",
+        "description": "Create a shielded account for the Ethereum account, so that the new shielded account can be funded with the Ethereum account",
+        "security": [
+          {
+            "bearer_token": []
+          }
+        ],
+        "tags": [
+          "Shielded Account"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/service_id"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ShieldedAccount_Input"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Shielded Account Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShieldedAccount"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/contracts": {
+      "get": {
+        "summary": "Get Zero Knowledge Transfer contracts",
+        "description": "Returns the Zero Knowledge Transfer contracts deployed in the environment along with their corresponding ERC20 contracts\n",
+        "security": [
+          {
+            "bearer_token": []
+          }
+        ],
+        "tags": [
+          "ZKP Contracts"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/service_id"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Contracts Retrieved",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ShieldedContract"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Deploy Zero Knowledge Proof contract (ZSC)",
+        "description": "Deploys a Zero Knowledge Proof contract (ZSC)\n",
+        "security": [
+          {
+            "bearer_token": []
+          }
+        ],
+        "tags": [
+          "ZKP Contracts"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/service_id"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ShieldedContract_Input"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Contract Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShieldedContract"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/contracts/{shielded_contract_id}/fund": {
+      "post": {
+        "summary": "Fund a shielded account",
+        "description": "Funds a shielded account in a Zero Knowledge Proof contract (ZSC) by transfering ERC20 tokens to the ZSC contract\n",
+        "security": [
+          {
+            "bearer_token": []
+          }
+        ],
+        "tags": [
+          "ZKP Contracts"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/service_id"
+          },
+          {
+            "$ref": "#/components/parameters/shielded_contract_id"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Funding_Input"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Funding Successful"
+          }
+        }
+      }
+    },
+    "/contracts/{shielded_contract_id}/withdraw": {
+      "post": {
+        "summary": "Withdraw balance from a shielded account",
+        "description": "Withdraws from a shielded account in a Zero Knowledge Proof contract (ZSC) by burning the requested amount of Zether and transfering equal amount of ERC20 tokens back to the original funding account\n",
+        "security": [
+          {
+            "bearer_token": []
+          }
+        ],
+        "tags": [
+          "ZKP Contracts"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/service_id"
+          },
+          {
+            "$ref": "#/components/parameters/shielded_contract_id"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Withdrawing_Input"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Withdraw Successful"
+          }
+        }
+      }
+    },
+    "/contracts/{shielded_contract_id}/transfer": {
+      "post": {
+        "summary": "Transfer Zether tokens between shielded accounts",
+        "description": "Transfers Zether tokens from a shielded account to another shielded account in a Zero Knowledge Proof contract (ZSC)\n",
+        "security": [
+          {
+            "bearer_token": []
+          }
+        ],
+        "tags": [
+          "ZKP Contracts"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/service_id"
+          },
+          {
+            "$ref": "#/components/parameters/shielded_contract_id"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Transfer_Input"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Transfer Successful"
+          }
+        }
+      }
+    },
+    "/contracts/{shielded_contract_id}/balanceOf/{ethAccount}": {
+      "get": {
+        "summary": "Get shielded account balance",
+        "description": "Returns Zether token balance for the shielded account corresponding to the given Ethereum account\n",
+        "security": [
+          {
+            "bearer_token": []
+          }
+        ],
+        "tags": [
+          "ZKP Contracts"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/service_id"
+          },
+          {
+            "$ref": "#/components/parameters/shielded_contract_id"
+          },
+          {
+            "$ref": "#/components/parameters/ethAccount"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Balance Successfully Retrieved",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "result": {
+                      "type": "integer"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearer_token": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "Kaleido API for platform resources are authenticated using the Bearer token in the `Authorization` HTTP header. The token can either be the API Key created in the Kaleido user's account, or the JWT token\nissued to the user's browser as a cookie after logging in. The JWT token is set to expire in one hour.\n"
+      },
+      "app_creds": {
+        "type": "http",
+        "scheme": "basic",
+        "description": "Kaleido API for marketplace services are authenticated using application credentials. The username and password must be created in the environment containing the service instance as \"Application Credentials\". For more\ndetails see the [documentation on App Credentials](https://docs.kaleido.io/developers/app/credentials/).\n"
+      }
+    },
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "errorMessage": {
+            "type": "string"
+          }
+        }
+      },
+      "ShieldedAccount_Input": {
+        "type": "object",
+        "properties": {
+          "ethAccount": {
+            "type": "string",
+            "pattern": "^0x[0-9a-fA-F]{40}$"
+          }
+        },
+        "required": [
+          "ethAccount"
+        ],
+        "additionalProperties": false
+      },
+      "ShieldedAccount": {
+        "type": "object",
+        "properties": {
+          "membership_id": {
+            "type": "string",
+            "pattern": "^[0-9a-z]{10}$"
+          },
+          "ethAccount": {
+            "type": "string",
+            "pattern": "^0x[0-9a-fA-F]{40}$"
+          },
+          "shieldedAccount": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^0x[0-9a-f]{64}$"
+            }
+          },
+          "index": {
+            "type": "integer",
+            "description": "The index value can be used to identify the account in balance queries"
+          }
+        }
+      },
+      "ShieldedContract_Input": {
+        "type": "object",
+        "required": [
+          "erc20"
+        ],
+        "properties": {
+          "erc20": {
+            "type": "string",
+            "description": "ERC20 token contract address used by the ZSC for funding and withdrawing operations"
+          }
+        },
+        "additionalProperties": false
+      },
+      "ShieldedContract": {
+        "type": "object",
+        "properties": {
+          "zsc": {
+            "type": "string",
+            "description": "Zero Knowledge Transfer contract address"
+          },
+          "erc20": {
+            "type": "string",
+            "description": "ERC20 token contract address used by the ZSC for funding and withdrawing operations"
+          },
+          "epochLength": {
+            "type": "integer",
+            "description": "Epoch length in seconds, used by Zether protocol to manage transaction concurrency"
+          },
+          "compatible": {
+            "type": "boolean",
+            "description": "Whether the deployed ZSC contract version is compatible with the current service instance. If false is returned, a new ZSC contract must be deployed to work properly with the service."
+          }
+        }
+      },
+      "Funding_Input": {
+        "type": "object",
+        "required": [
+          "ethAccount",
+          "amount"
+        ],
+        "properties": {
+          "ethAccount": {
+            "type": "string",
+            "pattern": "^0x[0-9a-fA-F]{40}$",
+            "description": "The Ethereum account to receive the ERC20 tokens from the ZSC after burning equal amount of Zethers from the corresponding shielded account"
+          },
+          "amount": {
+            "type": "integer",
+            "description": "The amount of ERC20 tokens to transfer"
+          }
+        },
+        "additionalProperties": false
+      },
+      "Withdrawing_Input": {
+        "type": "object",
+        "required": [
+          "ethAccount",
+          "amount"
+        ],
+        "properties": {
+          "ethAccount": {
+            "type": "string",
+            "pattern": "^0x[0-9a-fA-F]{40}$",
+            "description": "The Ethereum account to draw the ERC20 tokens from in order to fund the corresponding shielded account inside the ZSC"
+          },
+          "shieldedAccount": {
+            "type": "array",
+            "description": "Optional. The shielded account corresponding to the Ethereum account.",
+            "items": {
+              "type": "string",
+              "pattern": "^0x[0-9a-f]{64}$"
+            }
+          },
+          "amount": {
+            "type": "integer",
+            "description": "The amount of ERC20 tokens to transfer"
+          }
+        },
+        "additionalProperties": false
+      },
+      "Transfer_Input": {
+        "type": "object",
+        "required": [
+          "from",
+          "to",
+          "amount"
+        ],
+        "properties": {
+          "from": {
+            "type": "array",
+            "description": "Shielded account to transfer Zether tokens from",
+            "items": {
+              "type": "string",
+              "pattern": "^0x[0-9a-f]{64}$"
+            }
+          },
+          "to": {
+            "type": "array",
+            "description": "Shielded account to transfer Zether tokens to",
+            "items": {
+              "type": "string",
+              "pattern": "^0x[0-9a-f]{64}$"
+            }
+          },
+          "amount": {
+            "type": "integer",
+            "description": "The amount of Zether tokens to transfer"
+          },
+          "decoys": {
+            "type": "array",
+            "description": "Optional. List of shielded accounts to add to the anonymity set to increase security of the transfer transaction",
+            "items": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "pattern": "^0x[0-9a-f]{64}$"
+              }
+            }
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "parameters": {
+      "service_id": {
+        "name": "service_id",
+        "in": "path",
+        "schema": {
+          "type": "string",
+          "pattern": "^[0-9a-z]{10}$"
+        },
+        "required": true
+      },
+      "shielded_contract_id": {
+        "name": "shielded_contract_id",
+        "in": "path",
+        "schema": {
+          "type": "string",
+          "pattern": "^0x[0-9a-f]{40}$"
+        },
+        "required": true
+      },
+      "ethAccount": {
+        "name": "ethAccount",
+        "in": "path",
+        "schema": {
+          "type": "string",
+          "pattern": "^0x[0-9a-f]{40}$"
+        },
+        "required": true
+      }
+    }
+  }
+}
