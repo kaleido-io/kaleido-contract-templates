@@ -1,5 +1,6 @@
 {
     "configurations": [
+
         {
             "name": "Launch Chrome",
             "request": "launch",
