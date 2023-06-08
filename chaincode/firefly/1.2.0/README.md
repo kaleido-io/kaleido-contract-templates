@@ -1,0 +1,1 @@
+`chaincode-go.bin` built from https://github.com/hyperledger/firefly/tree/main/smart_contracts/fabric/firefly-go

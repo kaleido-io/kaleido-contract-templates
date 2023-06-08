@@ -1,0 +1,1 @@
+`abi.json` and `bytecode.txt` precompiled from https://github.com/kaleido-io/kaleido-contract-templates/blob/344a669d7b52ad37c26cc76597a80d5af40ce197/contracts/firefly/Firefly.sol using SOLC version: `v0.8.10+commit.fc410830` and EVM version: `constantinople`
